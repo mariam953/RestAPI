@@ -1,0 +1,22 @@
+version: "3"
+
+services:
+    mongodbcontainer:
+        image: mongo:latest
+        volumes: 
+            - mongo-volume:/data/db
+        ports:
+            - '27017:27017'
+        restart: always        
+
+    restapi:
+        depends_on:
+            - mongodbcontainer      
+        build: 
+            context: .
+        ports:
+            - '5000:5000'
+        restart: always
+
+volumes:
+    mongo-volume: {}

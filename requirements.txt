@@ -1,0 +1,7 @@
+Flask==1.1.2
+pipenv
+bson
+pymongo
+twitterscraper
+pandas
+datetime
