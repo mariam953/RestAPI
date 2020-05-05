@@ -7,6 +7,7 @@ ENV FLASK_DEBUG True
 COPY ./ ./
 
 RUN pip install --no-cache-dir -r requirements.txt
+RUN nltk.download('stopwords')
 
 EXPOSE 5000
 

@@ -5,3 +5,4 @@ pymongo
 twitterscraper
 pandas
 datetime
+nltk

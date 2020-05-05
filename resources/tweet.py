@@ -3,6 +3,8 @@ from bson.objectid import ObjectId
 from pymongo import MongoClient
 from mymodules.jsonencoder import JSONEncoder
 
+
+
 #uri='mongodb://mongodbcontainer:27017'
 uri='mongodb://localhost:27017'
 
