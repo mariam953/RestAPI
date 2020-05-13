@@ -6,16 +6,17 @@ from mymodules.mongodb import dataframe_to_mongo
 from datetime import datetime,date,timedelta
 import time
 
-url = "https://api.twitter.com/1.1/trends/place.json?id=1"
+url = "https://api.twitter.com/1.1/trends/place.json?id=2487796"
 
 payload = {}
 headers = {
-  'Authorization': 'OAuth oauth_consumer_key="UccGzWcgnIlMAvL3H7bZGmDrC",oauth_token="1142809701433917442-lpIm7w0cV6ow0dqGVYoD9kj8AFi6Ck",oauth_signature_method="HMAC-SHA1",oauth_timestamp="1589327785",oauth_nonce="qAJdJksawLl",oauth_version="1.0",oauth_signature="uq43RMNKKXQhWX3NrArjmy2%2B2KU%3D"',
+  'Authorization': 'OAuth oauth_consumer_key="UccGzWcgnIlMAvL3H7bZGmDrC",oauth_token="1142809701433917442-lpIm7w0cV6ow0dqGVYoD9kj8AFi6Ck",oauth_signature_method="HMAC-SHA1",oauth_timestamp="1589338829",oauth_nonce="fWAg9ec89oL",oauth_version="1.0",oauth_signature="lY8jMsVhF6VWaEYq%2BAGEF%2Bgo2nE%3D"',
   'Cookie': 'personalization_id="v1_6stCa+fjoB4v2WpGChx+UQ=="; guest_id=v1%3A158932770384542900; lang=en'
 }
-
 def load_trends():
     response = requests.request("GET", url, headers=headers, data = payload)
+
+    print(response)
 
     a_json = json.loads(response.text.encode('utf8'))
 
