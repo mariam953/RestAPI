@@ -4,15 +4,20 @@ import pandas as pd
 import json
 from datetime import datetime,date,timedelta
 import time
+from textblob import TextBlob
+from googletrans import Translator
+import re
+from mymodules.mongodb import dataframe_to_mongo
 
 #uri='mongodb://mongodbcontainer:27017'
 uri='mongodb://localhost:27017'
 
-tweets_limit = 1000
+tweets_limit = 100
 tweet_lang="english"
 #init tweets period
 end_date = date.today()
-begin_date = end_date - timedelta(days=5)
+begin_date = end_date - timedelta(days=1)
+translator = Translator()
 
 def get_tweets(keywords,begin_date,end_date):
 
@@ -20,27 +25,21 @@ def get_tweets(keywords,begin_date,end_date):
 
     df= pd.DataFrame(t.__dict__ for t in tweets)
 
+    print("before removinf duplicate :",df.size)
+
+    df.drop_duplicates(subset ="tweet_id",keep = False, inplace = True)
+
+    print("after removing duplicate :",df.size)
+
+    print("adding sentiment analysis")
+
+    df['text'] = df.text.apply(lambda text:  re.sub(r"http\S+", "", text))
+
+    df['text'] = df.text.apply(lambda text:  translator.translate(text).text)
+    
+    df['sentiment'] = df.text.apply(lambda text: TextBlob(text).sentiment)
+
     return df
-
-def save_to_mongo(dataframe,database,collection):
-    try:
-        db = pymongo.MongoClient(uri)[database]
-        
-        items = json.loads(dataframe.T.to_json()).values()
-        
-        db[collection].insert_many(items)
-        
-        db[collection].count_documents({})        
-                
-    except Exception as e:
-            print(e)
-
-#tweets = get_tweets()
-
-#print("auto execute")
-
-#save_to_mongo(tweets,"tweet_bulk","tweetcollection"+end_date.strftime("%Y-%m-%d"))
-
 
 def tweets_to_mongo():
     
@@ -55,9 +54,9 @@ def tweets_to_mongo():
         current_timestamp = time.time()
         st = datetime.fromtimestamp(current_timestamp).strftime('%Y-%m-%d %H:%M:%S')
 
-        save_to_mongo(tweets,"tweet_bulk","tweetcollection "+st)
+        dataframe_to_mongo(tweets,"tweet_bulk","tweetcollection "+st)
 
-        save_to_mongo(pd.DataFrame(data={"batch":"batch "+st,"items_number":tweets.size,"started_at":st,"status":"succeed"}, index=[0]),"batch","tweets_batch")
+        dataframe_to_mongo(pd.DataFrame(data={"batch":"batch "+st,"items_number":tweets.size,"started_at":st,"status":"succeed"}, index=[0]),"batch","tweets_batch")
     except Exception as e:
             print(e)
 
@@ -73,9 +72,9 @@ def init_tweets():
         current_timestamp = time.time()
         st = datetime.fromtimestamp(current_timestamp).strftime('%Y-%m-%d %H:%M:%S')
 
-        save_to_mongo(tweets,"tweet_bulk","tweetcollection "+st)
+        dataframe_to_mongo(tweets,"tweet_bulk","tweetcollection "+st)
 
-        save_to_mongo(pd.DataFrame(data={"batch":"batch "+st,"items_number":tweets.size,"started_at":st,"status":"succeed"}, index=[0]),"batch","tweets_batch")
+        dataframe_to_mongo(pd.DataFrame(data={"batch":"batch "+st,"items_number":tweets.size,"started_at":st,"status":"succeed"}, index=[0]),"batch","tweets_batch")
     except Exception as e:
             print(e)
 
@@ -93,8 +92,8 @@ def load_tweets():
         current_timestamp = time.time()
         st = datetime.fromtimestamp(current_timestamp).strftime('%Y-%m-%d %H:%M:%S')
 
-        save_to_mongo(tweets,"tweet_bulk","tweetcollection "+st)
+        dataframe_to_mongo(tweets,"tweet_bulk","tweetcollection "+st)
 
-        save_to_mongo(pd.DataFrame(data={"batch":"batch "+st,"items_number":tweets.size,"started_at":st,"status":"succeed"}, index=[0]),"batch","tweets_batch")
+        dataframe_to_mongo(pd.DataFrame(data={"batch":"batch "+st,"items_number":tweets.size,"started_at":st,"status":"succeed"}, index=[0]),"batch","tweets_batch")
     except Exception as e:
             print(e)

@@ -3,8 +3,6 @@ from bson.objectid import ObjectId
 from pymongo import MongoClient
 from mymodules.jsonencoder import JSONEncoder
 
-
-
 #uri='mongodb://mongodbcontainer:27017'
 uri='mongodb://localhost:27017'
 
@@ -16,12 +14,9 @@ tweets = Blueprint('tweets', __name__)
 
 @tweets.route('/tweets')
 def get_tweets():
- #print(db.getCollection())
- #list the collections
  colls = db.list_collection_names()
  coll = colls[len(colls)-1]
  tweets = db[coll].find({})
- #print(tweets)
  return Response(JSONEncoder().encode([i for i in tweets]), mimetype="application/json", status=200)
 
 @tweets.route('/tweets/<id>')

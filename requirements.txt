@@ -6,3 +6,6 @@ twitterscraper
 pandas
 datetime
 nltk
+flask_cors
+TextBlob
+googletrans
