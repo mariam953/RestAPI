@@ -11,13 +11,19 @@ client = MongoClient(uri)
 db=client.tweet_bulk
 
 tweets = Blueprint('tweets', __name__)
+tweet_collection = 'tweetcollection '
 
-@tweets.route('/tweets')
-def get_tweets():
- colls = db.list_collection_names()
- coll = colls[len(colls)-1]
- tweets = db[coll].find({})
- return Response(JSONEncoder().encode([i for i in tweets]), mimetype="application/json", status=200)
+@tweets.route('/tweets/')
+@tweets.route('/tweets/<date>')
+def get_tweets(date=None):
+    if date is None :
+        colls = db.list_collection_names()
+        coll = colls[len(colls)-1]
+    else:
+        coll = tweet_collection+date
+        print("col is "+coll)
+    tweets = db[coll].find({})
+    return Response(JSONEncoder().encode([i for i in tweets]), mimetype="application/json", status=200)
 
 @tweets.route('/tweets/<id>')
 def get_tweet(id):

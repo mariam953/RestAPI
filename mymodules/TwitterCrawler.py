@@ -9,11 +9,11 @@ from googletrans import Translator
 import re
 from mymodules.mongodb import dataframe_to_mongo
 
-#uri='mongodb://mongodbcontainer:27017'
 uri='mongodb://localhost:27017'
 
 tweets_limit = 100
 tweet_lang="english"
+
 #init tweets period
 end_date = date.today()
 begin_date = end_date - timedelta(days=1)
@@ -21,67 +21,35 @@ translator = Translator()
 
 def get_tweets(keywords,begin_date,end_date):
 
-    tweets = query_tweets(keywords, limit = tweets_limit, begindate=begin_date, enddate=end_date, lang = tweet_lang)
+    try:
 
-    df= pd.DataFrame(t.__dict__ for t in tweets)
+        tweets = query_tweets(keywords, limit = tweets_limit, begindate=begin_date, enddate=end_date, lang = tweet_lang)
 
-    print("before removinf duplicate :",df.size)
+        df= pd.DataFrame(t.__dict__ for t in tweets)
 
-    df.drop_duplicates(subset ="tweet_id",keep = False, inplace = True)
+        print("before removinf duplicate :",df.size)
 
-    print("after removing duplicate :",df.size)
+        df.drop_duplicates(subset ="tweet_id",keep = False, inplace = True)
 
-    print("adding sentiment analysis")
+        print("after removing duplicate :",df.size)
 
-    df['text'] = df.text.apply(lambda text:  re.sub(r"http\S+", "", text))
+        print("adding sentiment analysis")
 
-    df['text'] = df.text.apply(lambda text:  translator.translate(text).text)
-    
-    df['sentiment'] = df.text.apply(lambda text: TextBlob(text).sentiment)
+        df['text'] = df.text.apply(lambda text:  re.sub(r"http\S+", "", text))
 
-    return df
+        df['text'] = df.text.apply(lambda text:  translator.translate(text).text)
+        
+        df['sentiment'] = df.text.apply(lambda text: TextBlob(text).sentiment)
 
-def tweets_to_mongo():
+        return df
+
+    except:
+        
+        print("une erreur est survenue")
+
+def load_tweets(keywords,created_at):
     
     try:
-        keywords="covid"
-
-        tweets = get_tweets(keywords,begin_date,end_date)
-
-        #end_date_string = end_date.strftime("%Y-%m-%d")
-
-        print(tweets.head())
-        current_timestamp = time.time()
-        st = datetime.fromtimestamp(current_timestamp).strftime('%Y-%m-%d %H:%M:%S')
-
-        dataframe_to_mongo(tweets,"tweet_bulk","tweetcollection "+st)
-
-        dataframe_to_mongo(pd.DataFrame(data={"batch":"batch "+st,"items_number":tweets.size,"started_at":st,"status":"succeed"}, index=[0]),"batch","tweets_batch")
-    except Exception as e:
-            print(e)
-
-def init_tweets():
-    
-    try:
-        keywords="covid"
-
-        tweets = get_tweets(keywords,begin_date,end_date)
-
-        print(tweets.head())
-
-        current_timestamp = time.time()
-        st = datetime.fromtimestamp(current_timestamp).strftime('%Y-%m-%d %H:%M:%S')
-
-        dataframe_to_mongo(tweets,"tweet_bulk","tweetcollection "+st)
-
-        dataframe_to_mongo(pd.DataFrame(data={"batch":"batch "+st,"items_number":tweets.size,"started_at":st,"status":"succeed"}, index=[0]),"batch","tweets_batch")
-    except Exception as e:
-            print(e)
-
-def load_tweets():
-    
-    try:
-        keywords="covid"
 
         begin_date = end_date  - timedelta(days=1)
 
@@ -89,11 +57,8 @@ def load_tweets():
 
         print(tweets.head())
 
-        current_timestamp = time.time()
-        st = datetime.fromtimestamp(current_timestamp).strftime('%Y-%m-%d %H:%M:%S')
+        dataframe_to_mongo(tweets,"tweet_bulk","tweetcollection "+created_at)
 
-        dataframe_to_mongo(tweets,"tweet_bulk","tweetcollection "+st)
-
-        dataframe_to_mongo(pd.DataFrame(data={"batch":"batch "+st,"items_number":tweets.size,"started_at":st,"status":"succeed"}, index=[0]),"batch","tweets_batch")
     except Exception as e:
-            print(e)
+        
+            print("une erreur est suvenue",e)

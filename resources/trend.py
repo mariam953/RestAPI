@@ -11,13 +11,19 @@ client = MongoClient(uri)
 db=client.trend_bulk
 
 trends = Blueprint('trends', __name__)
+trendcollection = "trendcollection "
 
-@trends.route('/trends')
-def get_trends():
- colls = db.list_collection_names()
- coll = colls[len(colls)-1]
- trends = db[coll].find({})
- return Response(JSONEncoder().encode([i for i in trends]), mimetype="application/json", status=200)
+@trends.route('/trends/')
+@trends.route('/trends/<date>')
+def get_trends(date=None):
+    if date is None :
+        colls = db.list_collection_names()
+        coll = colls[len(colls)-1]
+    else:
+        coll = trendcollection+date
+        print("col is "+coll)
+    trends = db[coll].find({})
+    return Response(JSONEncoder().encode([i for i in trends]), mimetype="application/json", status=200)
 
 @trends.route('/trends/<id>')
 def get_trend(id):
