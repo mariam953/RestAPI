@@ -8,6 +8,7 @@ from textblob import TextBlob
 from googletrans import Translator
 import re
 from mymodules.mongodb import dataframe_to_mongo
+from mymodules.preprocessing import tweet_preprocessing
 
 uri='mongodb://localhost:27017'
 
@@ -33,6 +34,13 @@ def get_tweets(keywords,begin_date,end_date):
 
         print("after removing duplicate :",df.size)
 
+        df= tweet_preprocessing (df)
+        
+        print("after cleansing :")
+
+        print(df)
+
+        
         print("adding sentiment analysis")
 
         df['text'] = df.text.apply(lambda text:  re.sub(r"http\S+", "", text))

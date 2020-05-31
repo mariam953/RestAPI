@@ -9,3 +9,4 @@ nltk
 flask_cors
 TextBlob
 googletrans
+PorterStemmer
