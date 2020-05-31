@@ -20,7 +20,7 @@ def get_trends(date=None):
         colls = db.list_collection_names()
         coll = colls[len(colls)-1]
     else:
-        coll = trendcollection+date
+        coll = trendcollection+date.replace('%20',' ')
         print("col is "+coll)
     trends = db[coll].find({})
     return Response(JSONEncoder().encode([i for i in trends]), mimetype="application/json", status=200)

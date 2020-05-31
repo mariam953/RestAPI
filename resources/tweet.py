@@ -20,7 +20,7 @@ def get_tweets(date=None):
         colls = db.list_collection_names()
         coll = colls[len(colls)-1]
     else:
-        coll = tweet_collection+date
+        coll = tweet_collection+date.replace('%20',' ')
         print("col is "+coll)
     tweets = db[coll].find({})
     return Response(JSONEncoder().encode([i for i in tweets]), mimetype="application/json", status=200)
@@ -30,3 +30,8 @@ def get_tweet(id):
     tweet = db.tweetcollection.find_one({"_id": ObjectId(id)})
     print(tweet)
     return Response(JSONEncoder().encode(tweet), mimetype="application/json", status=200)
+
+@tweets.route('/tweets/historic')
+def get_tweets_historic():
+    colls = db.list_collection_names()
+    return Response(JSONEncoder().encode([i.replace("tweetcollection ","") for i in colls]), mimetype="application/json", status=200)
