@@ -38,6 +38,7 @@ def load_trends(created_at):
 
     dataframe_to_mongo(dftomongo,"trend_bulk","trendcollection "+created_at)
     
-    print(trends_df_clean_select['query'].iloc[0])
+    #print(trends_df_clean_select['query'].iloc[0])
 
     return trends_df_clean_select['query'].iloc[0]
+
