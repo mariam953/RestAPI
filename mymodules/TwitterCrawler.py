@@ -5,48 +5,31 @@ import json
 from datetime import datetime,date,timedelta
 import time
 from textblob import TextBlob
+from mymodules.mongodb import dataframe_to_mongo
 from googletrans import Translator
 import re
-from mymodules.mongodb import dataframe_to_mongo
 from mymodules.preprocessing import tweet_preprocessing
 
-uri='mongodb://localhost:27017'
+uri='mongodb://mongodbcontainer:27017'
 
 tweets_limit = 100
 tweet_lang="english"
 
 #init tweets period
-end_date = date.today()
-begin_date = end_date - timedelta(days=1)
 translator = Translator()
 
 def get_tweets(keywords,begin_date,end_date):
 
     try:
-
+        #
         tweets = query_tweets(keywords, limit = tweets_limit, begindate=begin_date, enddate=end_date, lang = tweet_lang)
 
         df= pd.DataFrame(t.__dict__ for t in tweets)
 
-        print("before removinf duplicate :",df.size)
+        df = tweet_preprocessing(df)
 
-        df.drop_duplicates(subset ="tweet_id",keep = False, inplace = True)
-
-        print("after removing duplicate :",df.size)
-
-        df= tweet_preprocessing (df)
-        
-        print("after cleansing :")
-
-        print(df)
-
-        
         print("adding sentiment analysis")
 
-        df['text'] = df.text.apply(lambda text:  re.sub(r"http\S+", "", text))
-
-        df['text'] = df.text.apply(lambda text:  translator.translate(text).text)
-        
         df['sentiment'] = df.text.apply(lambda text: TextBlob(text).sentiment)
 
         return df
@@ -58,8 +41,9 @@ def get_tweets(keywords,begin_date,end_date):
 def load_tweets(keywords,created_at):
     
     try:
+        end_date = date.today()
 
-        begin_date = end_date  - timedelta(days=1)
+        begin_date = end_date  - timedelta(days=10)
 
         tweets = get_tweets(keywords,begin_date,end_date)
 

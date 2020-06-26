@@ -10,7 +10,7 @@ import time
 from mymodules.TwitterCrawler import load_tweets
 from mymodules.TrendsCrawler import load_trends
 
-interval = 10*60 # in minutes
+interval = 20*60 # in minutes
 
 def set_interval(func, sec):
     def func_wrapper():
@@ -36,5 +36,5 @@ CORS(app)
 app.register_blueprint(tweets)
 app.register_blueprint(trends)
 
-
-app.run(host='0.0.0.0')
+    
+app.run(host='0.0.0.0')   

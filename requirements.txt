@@ -10,3 +10,4 @@ flask_cors
 TextBlob
 googletrans
 PorterStemmer
+requests_oauthlib

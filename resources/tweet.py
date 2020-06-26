@@ -3,8 +3,7 @@ from bson.objectid import ObjectId
 from pymongo import MongoClient
 from mymodules.jsonencoder import JSONEncoder
 
-#uri='mongodb://mongodbcontainer:27017'
-uri='mongodb://localhost:27017'
+uri='mongodb://mongodbcontainer:27017'
 
 client = MongoClient(uri)
 
@@ -24,6 +23,12 @@ def get_tweets(date=None):
         print("col is "+coll)
     tweets = db[coll].find({})
     return Response(JSONEncoder().encode([i for i in tweets]), mimetype="application/json", status=200)
+
+@tweets.route('/tweets/<id>')
+def get_tweet(id):
+    tweet = db.tweetcollection.find_one({"_id": ObjectId(id)})
+    print(tweet)
+    return Response(JSONEncoder().encode(tweet), mimetype="application/json", status=200)
 
 @tweets.route('/tweets/historic')
 def get_tweets_historic():

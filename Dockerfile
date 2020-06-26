@@ -7,8 +7,7 @@ ENV FLASK_DEBUG True
 COPY ./ ./
 
 RUN pip install --no-cache-dir -r requirements.txt
-RUN nltk.download('stopwords')
 
 EXPOSE 5000
 
-CMD flask run --host=0.0.0.0
+CMD python app.py

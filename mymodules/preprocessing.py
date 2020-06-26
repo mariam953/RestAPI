@@ -5,15 +5,18 @@ from nltk.corpus import stopwords
 import pandas as pd
 import csv,re
 
+nltk.download('stopwords')
 stop= stopwords.words("english")
 
-#print(stopwords)
-#data= [[1,'is so sad for my alp'],[2,'i think mi bf cheating me'],[3,'omg its already 7:30']]
-#tweets = pd.DataFrame(data,columns=['Id','text'])
-
-#print(tweets)
-
 def tweet_preprocessing(tweets):
+
+    tweets.drop_duplicates(subset ="tweet_id",keep = False, inplace = True)
+
+    tweets['text'] = tweets.text.apply(lambda text:  re.sub(r"http\S+", "", text))
+
+    tweets['text'] = tweets.text.apply(lambda text:  translator.translate(text).text)
+        
+
     #First step : ----------------------Remove Stop Words---------------------------------
 
     tweets['text'] = tweets['text'].apply(lambda x: '  '.join( [word for word in x.split() if word not in (stop)] ) )

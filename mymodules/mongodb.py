@@ -2,7 +2,7 @@ import pymongo
 import pandas as pd
 import json
 
-uri='mongodb://localhost:27017'
+uri='mongodb://mongodbcontainer:27017'
 
 def dataframe_to_mongo(dataframe,database,collection):
     try:
